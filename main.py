@@ -33,28 +33,23 @@ def unescape(text):
 
 
 def translate(to_translate, to_language="auto", from_language="auto", wrap_len="80"):
-    base_link = "https://translate.yandex.com/?source_lang=%s&target_lang=%s&text=%s"
-    if (sys.version_info[0] < 3):
-        to_translate = urllib.quote_plus(to_translate)
-        link = base_link % (to_language, from_language, to_translate)
-        request = urllib2.Request(link, headers=agent)
-        raw_data = urllib2.urlopen(request).read()
-    else:
-        to_translate = urllib.parse.quote(to_translate)
-        link = base_link % ( from_language,to_language, to_translate)
-        request = urllib.request.Request(link, headers=agent)
-        raw_data = urllib.request.urlopen(request).read()
-       
-    data = raw_data.decode("utf-8")
-    
-    expr = r'class="result-container">(.*?)<'
-    re_result = re.findall(expr, data)
-    if (len(re_result) == 0):
-        result = ""
-    else:
-        result = unescape(re_result[0])
-    
-    return ("\n".join(textwrap.wrap(result, int(wrap_len) if wrap_len.isdigit() else 80 )))
+    url = 'http://fanyi.youdao.com/translate?smartresult=dict&smartresult=rule'
+    data = {'i': to_translate,
+            'from': 'AUTO',
+            'to': 'AUTO',
+            'smartresult': 'dict',
+            'client': 'fanyideskweb',
+            'doctype': 'json',
+            'version': '2.1',
+            'keyfrom': 'fanyi.web',
+            'action': 'FY_BY_REALTIME',
+            'typoResult': 'false'}
+    # 将需要post的内容，以字典的形式记录在data内。
+    r = requests.post(url, data=data)
+    # post需要输入两个参数，一个url，一个是data，返回的是一个Response对象
+    answer = r.json()
+    result = answer['translateResult'][0][0]['tgt']
+    return result;
 
 
 
