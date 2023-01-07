@@ -11,6 +11,7 @@ from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAct
 import textwrap
 import sys
 import re
+import requests
 
 if (sys.version_info[0] < 3):
     import urllib2
